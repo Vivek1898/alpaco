@@ -7,6 +7,7 @@ import { Skeleton } from "./ui/skeleton";
 import { TrendingUp, DollarSign, Activity, ChevronUp, ChevronDown, RefreshCcw } from "lucide-react";
 import { Button } from "./ui/button";
 import { TechnicalMeter } from "./technical-meter";
+import {cn} from "@/lib/utils";
 
 interface CryptoData {
   symbol: string;
@@ -103,214 +104,221 @@ export function MarketOverview({ compact = false }: MarketOverviewProps) {
 
   if (compact) {
     return (
-      <>
-        {/* Market Stats */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Market Cap</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${(totalMarketCap / 1e9).toFixed(2)}B
-            </div>
-          </CardContent>
-        </Card>
+        <>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Market Cap</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold">
+                ${(totalMarketCap / 1e9).toFixed(2)}B
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${(total24hVolume / 1e9).toFixed(2)}B
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold">
+                ${(total24hVolume / 1e9).toFixed(2)}B
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">BTC Dominance</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {btcDominance.toFixed(2)}%
-            </div>
-          </CardContent>
-        </Card>
-      </>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">BTC Dominance</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold">
+                {btcDominance.toFixed(2)}%
+              </div>
+            </CardContent>
+          </Card>
+        </>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Technical Analysis</h2>
-          <p className="text-muted-foreground">
-            Real-time market analysis and technical indicators
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {lastUpdated && (
-            <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchMarketData}
-            disabled={loading}
-          >
-            <RefreshCcw className="h-4 w-4 mr-1" />
-            Refresh
-          </Button>
-        </div>
-      </div>
-
-      {error ? (
-        <Card className="p-4 bg-red-50 border-red-200">
-          <p className="text-red-600">{error}</p>
-        </Card>
-      ) : (
-        <>
-          {/* Market Stats */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Market Cap</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  ${(totalMarketCap / 1e9).toFixed(2)}B
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Combined value of tracked assets
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">24h Volume</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  ${(total24hVolume / 1e9).toFixed(2)}B
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Total trading volume in 24h
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">BTC Dominance</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {btcDominance.toFixed(2)}%
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Bitcoin's market share
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Markets</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{cryptoData.length}</div>
-                <p className="text-xs text-muted-foreground">
-                  Tracked trading pairs
-                </p>
-              </CardContent>
-            </Card>
+      <div className="space-y-6 sm:space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Technical Analysis</h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Real-time market analysis and technical indicators
+            </p>
           </div>
-
-          {/* Timeframe Selection */}
-          <div className="flex gap-2">
-            <Button
-              variant={selectedTimeframe === "1min" ? "default" : "outline"}
-              onClick={() => setSelectedTimeframe("1min")}
-            >
-              1 minute
-            </Button>
-            <Button
-              variant={selectedTimeframe === "5min" ? "default" : "outline"}
-              onClick={() => setSelectedTimeframe("5min")}
-            >
-              5 minutes
-            </Button>
-            <Button
-              variant={selectedTimeframe === "1hour" ? "default" : "outline"}
-              onClick={() => setSelectedTimeframe("1hour")}
-            >
-              1 hour
-            </Button>
-          </div>
-
-          {/* Cryptocurrencies Grid with Technical Analysis */}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {loading ? (
-              Array(6).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-[300px] w-full" />
-              ))
-            ) : (
-              cryptoData.map((crypto) => (
-                <div key={crypto.symbol} className="space-y-4">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-primary">
-                            {crypto.symbol}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium">${coinLayerService.formatRate(crypto.rate)}</p>
-                          <div className={`flex items-center text-sm ${
-                            crypto.change24h >= 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {crypto.change24h >= 0 ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )}
-                            <span>{Math.abs(crypto.change24h).toFixed(2)}%</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-muted-foreground">
-                          MCap: ${(crypto.marketCap / 1e9).toFixed(2)}B
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Vol: ${(crypto.volume24h / 1e9).toFixed(2)}B
-                        </p>
-                      </div>
-                    </div>
-
-                    <TechnicalMeter
-                      symbol={crypto.symbol}
-                      timeframe={selectedTimeframe}
-                      {...crypto.technicalAnalysis[selectedTimeframe]}
-                    />
-                  </Card>
-                </div>
-              ))
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground w-full sm:w-auto">
+            {lastUpdated && (
+                <span className="hidden sm:inline">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </span>
             )}
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchMarketData}
+                disabled={loading}
+                className="ml-auto sm:ml-0"
+            >
+              <RefreshCcw className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Refresh</span>
+            </Button>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+
+        {error ? (
+            <Card className="p-4 bg-red-50 border-red-200">
+              <p className="text-red-600 text-sm sm:text-base">{error}</p>
+            </Card>
+        ) : (
+            <>
+              {/* Market Stats */}
+              <div className="grid gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs sm:text-sm font-medium">Market Cap</CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg sm:text-2xl font-bold">
+                      ${(totalMarketCap / 1e9).toFixed(2)}B
+                    </div>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      Combined value of tracked assets
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs sm:text-sm font-medium">24h Volume</CardTitle>
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg sm:text-2xl font-bold">
+                      ${(total24hVolume / 1e9).toFixed(2)}B
+                    </div>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      Total trading volume in 24h
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs sm:text-sm font-medium">BTC Dominance</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg sm:text-2xl font-bold">
+                      {btcDominance.toFixed(2)}%
+                    </div>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      Bitcoin&#39;s market share
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-xs sm:text-sm font-medium">Active Markets</CardTitle>
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg sm:text-2xl font-bold">{cryptoData.length}</div>
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      Tracked trading pairs
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Timeframe Selection */}
+              <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0">
+                <Button
+                    variant={selectedTimeframe === "1min" ? "default" : "outline"}
+                    onClick={() => setSelectedTimeframe("1min")}
+                    className="whitespace-nowrap text-sm"
+                >
+                  1 minute
+                </Button>
+                <Button
+                    variant={selectedTimeframe === "5min" ? "default" : "outline"}
+                    onClick={() => setSelectedTimeframe("5min")}
+                    className="whitespace-nowrap text-sm"
+                >
+                  5 minutes
+                </Button>
+                <Button
+                    variant={selectedTimeframe === "1hour" ? "default" : "outline"}
+                    onClick={() => setSelectedTimeframe("1hour")}
+                    className="whitespace-nowrap text-sm"
+                >
+                  1 hour
+                </Button>
+              </div>
+
+              {/* Cryptocurrencies Grid */}
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {loading ? (
+                    Array(6).fill(0).map((_, i) => (
+                        <Skeleton key={i} className="h-[250px] sm:h-[300px] w-full" />
+                    ))
+                ) : (
+                    cryptoData.map((crypto) => (
+                        <Card key={crypto.symbol} className="p-3 sm:p-4">
+                          <div className="flex items-center justify-between mb-3 sm:mb-4">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-xs sm:text-sm font-semibold text-primary">
+                          {crypto.symbol}
+                        </span>
+                              </div>
+                              <div>
+                                <p className="text-sm sm:text-base font-medium">
+                                  ${coinLayerService.formatRate(crypto.rate)}
+                                </p>
+                                <div className={cn(
+                                    "flex items-center text-xs sm:text-sm",
+                                    crypto.change24h >= 0 ? 'text-green-600' : 'text-red-600'
+                                )}>
+                                  {crypto.change24h >= 0 ? (
+                                      <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  ) : (
+                                      <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  )}
+                                  <span>{Math.abs(crypto.change24h).toFixed(2)}%</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs sm:text-sm text-muted-foreground">
+                                MCap: ${(crypto.marketCap / 1e9).toFixed(2)}B
+                              </p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">
+                                Vol: ${(crypto.volume24h / 1e9).toFixed(2)}B
+                              </p>
+                            </div>
+                          </div>
+
+                          <TechnicalMeter
+                              symbol={crypto.symbol}
+                              timeframe={selectedTimeframe}
+                              {...crypto.technicalAnalysis[selectedTimeframe]}
+                          />
+                        </Card>
+                    ))
+                )}
+              </div>
+            </>
+        )}
+      </div>
   );
 }
