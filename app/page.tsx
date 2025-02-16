@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, Brain, LineChart, Lock, Sparkles, ChevronRight, Zap, Shield, Menu, X } from "lucide-react";
+import { ArrowRight, BarChart3, Brain, LineChart, Lock, Sparkles, ChevronRight, Shield, Menu, X } from "lucide-react";
 
 export default function LandingPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -194,11 +194,12 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <Zap className="h-5 w-5 text-primary" />
+                            {/*<Zap className="h-5 w-5 text-primary" />*/}
+                            <img src={'/fav.png'} alt={"Alpaco"} className="h-6 w-6 text-primary"/>
                             <span className="font-semibold">Alpaco</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            © 2025 Alpaco. All rights reserved.
+                        © 2025 Alpaco. All rights reserved.
                         </p>
                     </div>
                 </div>
