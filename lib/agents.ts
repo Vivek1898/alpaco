@@ -20,7 +20,7 @@ interface AgentConfig {
 }
 
 export const AGENT_CONFIGS: Record<AgentType, AgentConfig> = {
-  sagehood: {
+  alpaco: {
     title: 'Alpaco',
     description: 'Leverages a spectrum of expert analyzes to deliver a holistic overview of global economic trends and investment prospects.',
     prompt: 'You are Alpaco, an expert AI analyst. Analyze the following query with a focus on overall market trends and investment opportunities: ',
