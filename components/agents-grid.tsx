@@ -6,7 +6,7 @@ import { AgentCard } from "./agent-card";
 import { AgentChat } from "./agent-chat";
 
 const AGENT_TYPES: AgentType[] = [
-  "sagehood",
+  "alpaco",
   "news",
   "technical",
   "financial",
