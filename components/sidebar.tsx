@@ -1,19 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
     Home,
     BarChart2,
     MessageSquare,
-    Settings,
-    LogOut,
     Zap,
-    ZapIcon,
+    ChevronLeft,
+    ChevronRight,
     ActivityIcon,
-    ChartCandlestick,
+    ChartCandlestick
 } from "lucide-react";
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
     {
@@ -43,68 +43,94 @@ const menuItems = [
     },
 ];
 
+interface SidebarProps {
+    isExpanded: boolean;
+    onExpandedChange: (expanded: boolean) => void;
+}
 
-const bottomMenuItems = [
-    {
-        title: "Settings",
-        icon: Settings,
-        href: "/settings",
-    },
-];
-
-export function Sidebar() {
+export function Sidebar({ isExpanded, onExpandedChange }: SidebarProps) {
     const pathname = usePathname();
 
+    useEffect(() => {
+        const checkScreenSize = () => {
+            const isSmallScreen = window.innerWidth < 1024;
+            if (isSmallScreen) {
+                onExpandedChange(false);
+            }
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, [onExpandedChange]);
+
     return (
-        <div className="flex h-full w-64 flex-col border-r bg-white">
-            <Link href={"/"}>
-                <div className="flex h-16 items-center border-b px-6 gap-2">
-                    <Zap className="h-6 w-6 text-primary "/>
+        <>
+            <div
+                className={cn(
+                    "fixed inset-y-0 left-0 z-40 flex flex-col bg-white border-r transition-all duration-300",
+                    isExpanded ? "w-64" : "w-16"
+                )}
+            >
+                {/* Header */}
+                <Link href={"/"}>
+                    <div className={cn(
+                        "flex h-16 items-center border-b",
+                        isExpanded ? "px-6" : "justify-center"
+                    )}>
+                        {/*<Zap className="h-6 w-6 text-primary shrink-0" />*/}
+                        <img src={'/fav.png'} alt={"Alpaco"} className="h-6 w-6 text-primary shrink-0"/>
+                        {isExpanded && (
+                            <h1 className="ml-2 text-2xl font-bold tracking-tight truncate">
+                                Alpaco
+                            </h1>
+                        )}
+                    </div>
+                </Link>
 
-                    <h1 className="text-2xl font-bold tracking-tigh">Alpaco</h1>
-
-
+                {/* Main Menu */}
+                <div className="flex-1 overflow-auto py-4">
+                    <nav className={cn(
+                        "space-y-1",
+                        isExpanded ? "px-4" : "px-2"
+                    )}>
+                        {menuItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                title={!isExpanded ? item.title : undefined}
+                                className={cn(
+                                    "flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                    !isExpanded && "justify-center",
+                                    pathname === item.href
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-gray-700 hover:bg-gray-100"
+                                )}
+                            >
+                                <item.icon className="h-5 w-5 shrink-0" />
+                                {isExpanded && <span className="ml-2">{item.title}</span>}
+                            </Link>
+                        ))}
+                    </nav>
                 </div>
-            </Link>
-
-            <div className="flex-1 overflow-auto py-4">
-                <nav className="space-y-1 px-4">
-                    {menuItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium",
-                                pathname === item.href
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-gray-700 hover:bg-gray-100"
-                            )}
-                        >
-                            <item.icon className="h-5 w-5"/>
-                            <span>{item.title}</span>
-                        </Link>
-                    ))}
-                </nav>
             </div>
 
-            {/*<div className="border-t p-4">*/}
-            {/*  <nav className="space-y-1">*/}
-            {/*    {bottomMenuItems.map((item) => (*/}
-            {/*      <Link*/}
-            {/*        key={item.href}*/}
-            {/*        href={item.href}*/}
-            {/*        className="flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"*/}
-            {/*      >*/}
-            {/*        <item.icon className="h-5 w-5" />*/}
-            {/*        <span>{item.title}</span>*/}
-            {/*      </Link>*/}
-            {/*    ))}*/}
-            {/*    <button className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">*/}
-            {/*      <LogOut className="h-5 w-5" />*/}
-            {/*      <span>Log Out</span>*/}
-            {/*    </button>*/}
-            {/*  </nav>*/}
-            {/*</div>*/}
-        </div>
+            {/* Floating Collapse Toggle */}
+            <button
+                onClick={() => onExpandedChange(!isExpanded)}
+                className={cn(
+                    "fixed z-50 flex items-center justify-center w-5 h-5 rounded-full bg-white border shadow-sm hover:bg-gray-50 transition-all duration-300",
+                    "bottom-[74px]", // Position below header
+                    isExpanded ? "left-[248px]" : "left-[56px]" // Align with sidebar width
+                )}
+                title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
+            >
+                {isExpanded ? (
+                    <ChevronLeft className="h-3 w-3" />
+                ) : (
+                    <ChevronRight className="h-3 w-3" />
+                )}
+            </button>
+        </>
     );
 }
