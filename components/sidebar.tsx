@@ -48,7 +48,7 @@ interface SidebarProps {
     onExpandedChange: (expanded: boolean) => void;
 }
 
-export function Sidebar({ isExpanded, onExpandedChange }: SidebarProps) {
+export function Sidebar({ isExpanded=true, onExpandedChange }: SidebarProps) {
     const pathname = usePathname();
 
     useEffect(() => {

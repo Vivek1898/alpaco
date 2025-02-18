@@ -9,7 +9,7 @@ export default function DashboardLayout({
                                         }: {
     children: React.ReactNode
 }) {
-    const [isExpanded, setIsExpanded] = useState(false); // Start collapsed
+    const [isExpanded, setIsExpanded] = useState(true); // Start collapsed
 
     return (
         <div className="flex h-screen overflow-hidden">
