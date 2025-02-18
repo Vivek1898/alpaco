@@ -1,36 +1,3 @@
-// import axios from 'axios';
-// import { SearchResponse, CoinGeckoMarket } from '../types/dex';
-//
-// const DEX_BASE_URL = 'https://api.dexscreener.com/latest/dex';
-// const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
-//
-// export const searchPairs = async (query: string): Promise<SearchResponse> => {
-//   const response = await axios.get(`${DEX_BASE_URL}/search?q=${query}`);
-//   return response.data;
-// };
-//
-// export const getPairsByChain = async (chainId: string, pairAddress: string): Promise<SearchResponse> => {
-//   const response = await axios.get(`${DEX_BASE_URL}/pairs/${chainId}/${pairAddress}`);
-//   return response.data;
-// };
-//
-// export const getTopTokens = async (): Promise<CoinGeckoMarket[]> => {
-//   const response = await axios.get(
-//     `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`
-//   );
-//   return response.data;
-// };
-//
-// export const getTrendingTokens = async (): Promise<CoinGeckoMarket[]> => {
-//   const response = await axios.get(
-//     `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=volume_desc&per_page=10&page=1&sparkline=false`
-//   );
-//   return response.data;
-// };
-
-
-
-
 import axios from 'axios';
 import { SearchResponse, CoinGeckoMarket, TokenProfile, DexMarketStats } from '../types/dex';
 

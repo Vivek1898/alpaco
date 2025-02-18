@@ -131,7 +131,7 @@ function App() {
             />
 
             <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                {marketStats && <DexStats stats={marketStats} isLoading={isLoadingStats}/>}
+                {marketStats && <DexStats />}
 
                 <div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
                     {/* Left Column */}
