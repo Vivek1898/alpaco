@@ -12,6 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  icons:"/fav.png",
   title: 'Crypto Market Intelligence',
   description: 'Real-time crypto market analysis and insights platform',
 };
