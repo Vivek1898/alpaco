@@ -11,7 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ActivityIcon,
-    ChartCandlestick
+    ChartCandlestick, LucideArrowBigDownDash
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +41,11 @@ const menuItems = [
         icon: ChartCandlestick,
         href: "/dashboard/news",
     },
+    // {
+    //     title: "Dashboard v2",
+    //     icon: LucideArrowBigDownDash,
+    //     href: "/dashboard/dex",
+    // },
 ];
 
 interface SidebarProps {

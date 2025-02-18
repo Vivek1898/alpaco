@@ -83,7 +83,7 @@ function App() {
         setKey(prevKey => prevKey + 1);
     };
 
-    const handleSearch = (query:any) => {
+    const handleSearch = (query: React.SetStateAction<string>) => {
         setSearchQuery(query);
     };
 
