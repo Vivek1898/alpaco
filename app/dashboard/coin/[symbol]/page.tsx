@@ -25,7 +25,7 @@ import {
 const timeframes = [
   { value: "1min", label: "1 Minute" },
   { value: "5min", label: "5 Minutes" },
-  { value: "1hour", label: "1 Hour" }
+  { value: "1hour", label: "1 Hour"  }
 ] as const;
 
 export default function CoinPage() {
