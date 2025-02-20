@@ -1,6 +1,6 @@
+'use client';
 /* eslint-disable */
 // @ts-nocheck
-'use client';
 // @swc-disable-next
 // @babel-disable
 // @compiler-disable
@@ -34,6 +34,7 @@ const timeframes = [
 ] as const;
 
 export default function CoinPageClient() {
+    console.log("HERE")
     const { symbol } = useParams();
     const [analysis, setAnalysis] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -199,12 +200,12 @@ export default function CoinPageClient() {
                                 <Progress
                                     value={Math.max(technical?.rsi || 0,0)}
                                     className="h-2"
-                                    indicatorClassName={
-                                        technical?.rsi >= 70 ? "bg-red-500" :
-                                            technical?.rsi >= 50 ? "bg-yellow-500" :
-                                                technical?.rsi >= 30 ? "bg-green-500" :
-                                                    "bg-red-500"
-                                    }
+                                    // indicatorClassName={
+                                    //     technical?.rsi >= 70 ? "bg-red-500" :
+                                    //         technical?.rsi >= 50 ? "bg-yellow-500" :
+                                    //             technical?.rsi >= 30 ? "bg-green-500" :
+                                    //                 "bg-red-500"
+                                    // }
                                 />
                             </div>
                         </CardContent>
@@ -223,7 +224,7 @@ export default function CoinPageClient() {
                                 <Progress
                                     value={50 + (technical?.macd || 0)}
                                     className="h-2"
-                                    indicatorClassName={technical?.macd > 0 ? "bg-green-500" : "bg-red-500"}
+                                    // indicatorClassName={technical?.macd > 0 ? "bg-green-500" : "bg-red-500"}
                                 />
                             </div>
                         </CardContent>
@@ -244,11 +245,11 @@ export default function CoinPageClient() {
                                 <Progress
                                     value={(social?.positive || 0) * 100}
                                     className="h-2"
-                                    indicatorClassName={
-                                        (social?.positive || 0) >= 0.7 ? "bg-green-500" :
-                                            (social?.positive || 0) >= 0.5 ? "bg-yellow-500" :
-                                                "bg-red-500"
-                                    }
+                                    // indicatorClassName={
+                                    //     (social?.positive || 0) >= 0.7 ? "bg-green-500" :
+                                    //         (social?.positive || 0) >= 0.5 ? "bg-yellow-500" :
+                                    //             "bg-red-500"
+                                    // }
                                 />
                             </div>
                         </CardContent>
@@ -267,11 +268,11 @@ export default function CoinPageClient() {
                                 <Progress
                                     value={score || 0}
                                     className="h-2"
-                                    indicatorClassName={
-                                        score as any >= 70 ? "bg-green-500" :
-                                            score as any >= 50 ? "bg-yellow-500" :
-                                                "bg-red-500"
-                                    }
+                                    // indicatorClassName={
+                                    //     score as any >= 70 ? "bg-green-500" :
+                                    //         score as any >= 50 ? "bg-yellow-500" :
+                                    //             "bg-red-500"
+                                    // }
                                 />
                             </div>
                         </CardContent>

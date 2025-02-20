@@ -26,7 +26,7 @@ const nextConfig = {
 
     // Safe watchOptions setup
     config.watchOptions = {
-      ignored: ['**/node_modules/**', '**/page.client.tsx']
+      ignored: ['**/node_modules/**', '**/client-page.tsx']
     };
 
     return config;
