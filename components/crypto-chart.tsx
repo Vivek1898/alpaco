@@ -85,7 +85,7 @@ export function CryptoChart({
 
     // Ensure data is sorted by time
     const sortedData = [...data].sort((a, b) => a.time - b.time);
-    areaSeries.setData(sortedData);
+    areaSeries.setData(sortedData as any || []);
 
     // Fit the chart content
     chart.timeScale().fitContent();

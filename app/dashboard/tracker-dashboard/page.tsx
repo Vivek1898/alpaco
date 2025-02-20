@@ -220,7 +220,7 @@ export default function DashboardPage() {
                                                     <SelectValue placeholder="Select coin" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {getAvailableCoins().map(coin => (
+                                                    {getAvailableCoins().map((coin:any) => (
                                                         <SelectItem key={coin.value} value={coin.value}>
                                                             <div className="flex items-center gap-2">
                                                                 <span>{coin.label}</span>

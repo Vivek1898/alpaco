@@ -158,7 +158,7 @@ function AlpacaScore({ value }: { value: number }) {
         </span>
       </div>
       <Progress 
-        value={value} 
+        value={value || 0}
         className="h-2" 
         indicatorClassName={cn(getProgressColor(value))}
       />
