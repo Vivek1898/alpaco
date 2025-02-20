@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+const a = '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'
 
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: a,
 });
 
 export async function POST(request: Request) {
