@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "./ui/card";
+import { cn } from "@/lib/utils";
 
 interface TechnicalMeterProps {
   symbol: string;
@@ -48,7 +49,7 @@ export function TechnicalMeter({
   const signal = determineSignal();
 
   return (
-    <Card className="p-4 bg-white">
+    <Card className="p-4">
       <div className="text-sm font-medium mb-2">
         Technical Analysis for {symbol} ({timeframe})
       </div>
@@ -56,7 +57,9 @@ export function TechnicalMeter({
       {/* Meter */}
       <div className="relative w-full h-[120px] mb-4">
         {/* Semicircle background */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] bg-gradient-to-r from-red-500 via-gray-300 to-green-500 rounded-t-full overflow-hidden opacity-20" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200px] h-[100px] rounded-t-full overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-gray-300/20 to-green-500/20" />
+        </div>
         
         {/* Needle */}
         <div 
@@ -71,7 +74,7 @@ export function TechnicalMeter({
 
       {/* Signal */}
       <div className="text-center mb-4">
-        <span className={`text-lg font-bold ${signal.color}`}>
+        <span className={cn("text-lg font-bold", signal.color)}>
           {signal.text}
         </span>
       </div>

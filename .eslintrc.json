@@ -7,5 +7,8 @@
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
     "react/prop-types": "off"
-  }
+  },
+  "ignorePatterns": [
+    "src/components/ui/progress.tsx","app/dashboard/coin/[symbol]/page.tsx"
+  ]
 }

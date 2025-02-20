@@ -11,7 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ActivityIcon,
-    ChartCandlestick, LucideArrowBigDownDash
+    ChartCandlestick, LucideArrowBigDownDash, TrainIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +40,11 @@ const menuItems = [
         title: "Block News",
         icon: ChartCandlestick,
         href: "/dashboard/news",
+    },
+    {
+        title: "Tracker Dashboard",
+        icon: TrainIcon,
+        href: "/dashboard/tracker-dashboard",
     },
     // {
     //     title: "Dashboard v2",
