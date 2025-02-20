@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMarketData } from '@/lib/api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useMarketData, useHistoricalData } from '@/lib/api';
 import { CryptoChart } from '@/components/crypto-chart';
 import { CryptoTable, cryptoColumns } from '@/components/crypto-table';
 import { MarketStats } from '@/components/market-stats';
 import { GainersLosersView } from '@/components/gainers-losers-view';
+import { AirdropsView } from '@/components/airdrops-view';
 import {
     Activity,
     TrendingUp,
@@ -24,11 +26,11 @@ import {
     ArrowUpDown,
     Clock,
     Calendar,
-    ExternalLink
+    ExternalLink,
+    Coins
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isValid } from 'date-fns';
 import { cn, formatNumber } from '@/lib/utils';
-import DashboardContainer from "@/modules/dashboard/container/dashboard.container";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -45,9 +47,19 @@ const itemVariants = {
     show: { y: 0, opacity: 1 }
 };
 
-export default function DashboardPageV2() {
+const chartOptions = [
+    { value: 'price', label: 'Price' },
+    { value: 'volume', label: 'Volume' },
+    { value: 'market_cap', label: 'Market Cap' }
+];
+
+export default function DashboardPage() {
     const { data, isLoading, error } = useMarketData();
     const [activeTab, setActiveTab] = useState('overview');
+    const [selectedChart, setSelectedChart] = useState('price');
+    const [selectedCoin, setSelectedCoin] = useState('BTC');
+
+    const { data: historicalData, isLoading: isHistoricalLoading } = useHistoricalData(selectedCoin);
 
     const getFearAndGreedColor = (value: number) => {
         if (value >= 75) return 'text-green-500';
@@ -56,17 +68,35 @@ export default function DashboardPageV2() {
         return 'text-red-500';
     };
 
-    const formatTimeAgo = (timestamp: string) => {
-        try {
-            const date = new Date(timestamp);
-            if (isNaN(date.getTime())) {
-                return 'Invalid date';
-            }
-            return formatDistanceToNow(date, { addSuffix: true });
-        } catch (error) {
-            console.error('Error formatting date:', error);
-            return 'Invalid date';
-        }
+    const getAvailableCoins = () => {
+        if (!data?.latestListings) return [];
+        return data.latestListings.map((coin: any) => ({
+            value: coin.symbol,
+            label: coin.name,
+            symbol: coin.symbol
+        }));
+    };
+
+    const getChartData = () => {
+        if (!historicalData?.[selectedCoin]?.[0]?.quotes) return [];
+
+        return historicalData[selectedCoin][0].quotes.map((quote: any) => ({
+            time: new Date(quote.timestamp).getTime() / 1000,
+            value: selectedChart === 'price' ? quote.quote.USD.price :
+                selectedChart === 'volume' ? quote.quote.USD.volume_24h :
+                    quote.quote.USD.market_cap
+        }));
+    };
+
+    const getCurrentPrice = () => {
+        if (!data?.latestListings) return null;
+        const coin = data.latestListings.find((c: any) => c.symbol === selectedCoin);
+        if (!coin) return null;
+
+        return {
+            price: coin.quote.USD.price,
+            change: coin.quote.USD.percent_change_24h
+        };
     };
 
     if (error) {
@@ -98,12 +128,13 @@ export default function DashboardPageV2() {
                 </p>
             </motion.div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-                <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-8">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="market">Market</TabsTrigger>
                     <TabsTrigger value="trending">Trending</TabsTrigger>
                     <TabsTrigger value="gainers-losers">Gainers & Losers</TabsTrigger>
+                    <TabsTrigger value="airdrops">Airdrops</TabsTrigger>
                     <TabsTrigger value="historical">Historical</TabsTrigger>
                     <TabsTrigger value="fear-greed">Fear & Greed</TabsTrigger>
                 </TabsList>
@@ -149,9 +180,11 @@ export default function DashboardPageV2() {
                                                 <div className="text-lg font-medium mb-1">
                                                     {data.fearAndGreed.value_classification}
                                                 </div>
-                                                <div className="text-sm text-muted-foreground">
-                                                    Updated {formatTimeAgo(data.fearAndGreed.timestamp)}
-                                                </div>
+                                                {data.fearAndGreed.timestamp && isValid(new Date(data.fearAndGreed.timestamp)) && (
+                                                    <div className="text-sm text-muted-foreground">
+                                                        Updated {formatDistanceToNow(new Date(data.fearAndGreed.timestamp), { addSuffix: true })}
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : null}
                                     </CardContent>
@@ -161,18 +194,62 @@ export default function DashboardPageV2() {
                             {/* Market Overview */}
                             <motion.div variants={itemVariants} className="col-span-2">
                                 <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <Activity className="h-5 w-5" />
-                                            Bitcoin Price Chart
-                                        </CardTitle>
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <div className="space-y-1">
+                                            <CardTitle className="flex items-center gap-2">
+                                                <Activity className="h-5 w-5" />
+                                                {data?.latestListings?.find((c: any) => c.symbol === selectedCoin)?.name || 'Loading...'} Chart
+                                            </CardTitle>
+                                            {!isLoading && getCurrentPrice() && (
+                                                <div className="flex items-center gap-2">
+                          <span className="text-lg font-medium">
+                            ${formatNumber(getCurrentPrice()!.price)}
+                          </span>
+                                                    <span className={cn(
+                                                        "text-sm",
+                                                        getCurrentPrice()!.change >= 0 ? "text-green-500" : "text-red-500"
+                                                    )}>
+                            {getCurrentPrice()!.change >= 0 ? '+' : ''}{getCurrentPrice()!.change.toFixed(2)}%
+                          </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Select value={selectedCoin} onValueChange={setSelectedCoin}>
+                                                <SelectTrigger className="w-[180px]">
+                                                    <SelectValue placeholder="Select coin" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {getAvailableCoins().map(coin => (
+                                                        <SelectItem key={coin.value} value={coin.value}>
+                                                            <div className="flex items-center gap-2">
+                                                                <span>{coin.label}</span>
+                                                                <Badge variant="secondary">{coin.symbol}</Badge>
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <Select value={selectedChart} onValueChange={setSelectedChart}>
+                                                <SelectTrigger className="w-[180px]">
+                                                    <SelectValue placeholder="Select chart type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {chartOptions.map(option => (
+                                                        <SelectItem key={option.value} value={option.value}>
+                                                            {option.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
                                     </CardHeader>
                                     <CardContent>
-                                        {isLoading ? (
+                                        {isLoading || isHistoricalLoading ? (
                                             <Skeleton className="h-[300px] w-full" />
-                                        ) : data.historicalData ? (
+                                        ) : historicalData ? (
                                             <CryptoChart
-                                                data={data.historicalData}
+                                                data={getChartData()}
                                                 colors={{
                                                     backgroundColor: 'white',
                                                     lineColor: '#22c55e',
@@ -190,68 +267,41 @@ export default function DashboardPageV2() {
                                 </Card>
                             </motion.div>
 
-                            {/* Top Gainers */}
+                            {/* Latest Airdrops */}
                             <motion.div variants={itemVariants}>
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            <TrendingUp className="h-5 w-5" />
-                                            Top Gainers
+                                            <Gift className="h-5 w-5" />
+                                            Latest Airdrops
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         {isLoading ? (
                                             <ListingsSkeleton />
-                                        ) : data.trendingGainersLosers ? (
+                                        ) : data.airdrops ? (
                                             <div className="space-y-4">
-                                                {data.trendingGainersLosers
-                                                    .filter((coin: any) => coin.quote.USD.percent_change_24h > 0)
-                                                    .slice(0, 5)
-                                                    .map((coin: any) => (
-                                                        <div key={coin.id} className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-medium">{coin.name}</span>
-                                                                <Badge variant="secondary">{coin.symbol}</Badge>
+                                                {data.airdrops.slice(0, 5).map((airdrop: any) => (
+                                                    <div key={airdrop.id} className="flex flex-col gap-2 p-3 bg-muted/50 rounded-lg">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium">{airdrop.project_name}</span>
+                                                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="text-sm text-muted-foreground">
+                                    {airdrop.coin.name}
+                                  </span>
+                                                                    <Badge variant="secondary">{airdrop.coin.symbol}</Badge>
+                                                                </div>
                                                             </div>
-                                                            <span className="text-green-500">
-                                +{coin.quote.USD.percent_change_24h.toFixed(2)}%
-                              </span>
+                                                            <Badge>{airdrop.status}</Badge>
                                                         </div>
-                                                    ))}
-                                            </div>
-                                        ) : null}
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-
-                            {/* Top Losers */}
-                            <motion.div variants={itemVariants}>
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <ArrowUpDown className="h-5 w-5" />
-                                            Top Losers
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        {isLoading ? (
-                                            <ListingsSkeleton />
-                                        ) : data.trendingGainersLosers ? (
-                                            <div className="space-y-4">
-                                                {data.trendingGainersLosers
-                                                    .filter((coin: any) => coin.quote.USD.percent_change_24h < 0)
-                                                    .slice(0, 5)
-                                                    .map((coin: any) => (
-                                                        <div key={coin.id} className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-medium">{coin.name}</span>
-                                                                <Badge variant="secondary">{coin.symbol}</Badge>
+                                                        {airdrop.end_date && isValid(new Date(airdrop.end_date)) && (
+                                                            <div className="text-sm text-muted-foreground">
+                                                                Ends {formatDistanceToNow(new Date(airdrop.end_date), { addSuffix: true })}
                                                             </div>
-                                                            <span className="text-red-500">
-                                {coin.quote.USD.percent_change_24h.toFixed(2)}%
-                              </span>
-                                                        </div>
-                                                    ))}
+                                                        )}
+                                                    </div>
+                                                ))}
                                             </div>
                                         ) : null}
                                     </CardContent>
@@ -280,30 +330,20 @@ export default function DashboardPageV2() {
                 </TabsContent>
 
                 <TabsContent value="gainers-losers">
-                    <div className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <ArrowUpDown className="h-5 w-5" />
-                                    Gainers & Losers
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <GainersLosersView
-                                    data={data.trendingGainersLosers}
-                                    isLoading={isLoading}
-                                    timeWindow="24h"
-                                />
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <GainersLosersView
+                        data={data.trendingGainersLosers}
+                        isLoading={isLoading}
+                        timeWindow="24h"
+                    />
                 </TabsContent>
 
-                {/* Add other tab contents */}
+                <TabsContent value="airdrops">
+                    <AirdropsView
+                        data={data.airdrops}
+                        isLoading={isLoading}
+                    />
+                </TabsContent>
             </Tabs>
-            <div className={'mt-10'}>
-                <DashboardContainer/>
-            </div>
         </div>
     );
 }
@@ -322,12 +362,18 @@ function ListingsSkeleton() {
     return (
         <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-6 w-16" />
+                <div key={i} className="flex flex-col gap-2 p-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-2">
+                            <Skeleton className="h-4 w-48" />
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-6 w-16" />
+                            </div>
+                        </div>
+                        <Skeleton className="h-6 w-20" />
                     </div>
-                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-32" />
                 </div>
             ))}
         </div>

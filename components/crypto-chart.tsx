@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react';
 import { createChart, ColorType } from 'lightweight-charts';
 
 interface CryptoChartProps {
-  data: any;
+  data: {
+    time: number;
+    value: number;
+  }[];
   colors?: {
     backgroundColor?: string;
     lineColor?: string;
@@ -25,13 +28,7 @@ export function CryptoChart({
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!chartContainerRef.current || !data?.BTC?.[0]?.quotes) return;
-
-    // Transform the data into the format expected by lightweight-charts
-    const chartData = data.BTC[0].quotes.map((quote: any) => ({
-      time: new Date(quote.timestamp).getTime() / 1000,
-      value: quote.quote.USD.price
-    }));
+    if (!chartContainerRef.current || !data?.length) return;
 
     const handleResize = () => {
       if (chartContainerRef.current) {
@@ -86,7 +83,9 @@ export function CryptoChart({
       },
     });
 
-    areaSeries.setData(chartData);
+    // Ensure data is sorted by time
+    const sortedData = [...data].sort((a, b) => a.time - b.time);
+    areaSeries.setData(sortedData);
 
     // Fit the chart content
     chart.timeScale().fitContent();

@@ -5,7 +5,7 @@ import { formatNumber } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface GainersLosersViewProps {
-  data: any;
+  data: any[];
   isLoading: boolean;
   timeWindow?: string;
 }
@@ -21,12 +21,18 @@ export function GainersLosersView({ data, isLoading, timeWindow = "24h" }: Gaine
 
   // Sort data by percent change
   const sortedData = [...data];
-  sortedData.sort((a, b) => 
-    b.quote.USD.percent_change_24h - a.quote.USD.percent_change_24h
-  );
+  sortedData.sort((a, b) => {
+    const aChange = a.quote.USD[`percent_change_${timeWindow}`];
+    const bChange = b.quote.USD[`percent_change_${timeWindow}`];
+    return bChange - aChange;
+  });
 
-  const gainers = sortedData.filter(coin => coin.quote.USD.percent_change_24h > 0);
-  const losers = sortedData.filter(coin => coin.quote.USD.percent_change_24h < 0);
+  const gainers = sortedData.filter(coin => 
+    coin.quote.USD[`percent_change_${timeWindow}`] > 0
+  );
+  const losers = sortedData.filter(coin => 
+    coin.quote.USD[`percent_change_${timeWindow}`] < 0
+  );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,7 +61,7 @@ export function GainersLosersView({ data, isLoading, timeWindow = "24h" }: Gaine
                 </div>
                 <div className="text-right">
                   <div className="text-green-500 font-medium">
-                    +{coin.quote.USD.percent_change_24h.toFixed(2)}%
+                    +{coin.quote.USD[`percent_change_${timeWindow}`].toFixed(2)}%
                   </div>
                   <div className="text-sm text-muted-foreground">
                     ${formatNumber(coin.quote.USD.price)}
@@ -77,7 +83,7 @@ export function GainersLosersView({ data, isLoading, timeWindow = "24h" }: Gaine
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {losers.slice(0, 5).map((coin) => (
+            {losers.slice(-5).reverse().map((coin) => (
               <div
                 key={coin.id}
                 className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
@@ -92,7 +98,7 @@ export function GainersLosersView({ data, isLoading, timeWindow = "24h" }: Gaine
                 </div>
                 <div className="text-right">
                   <div className="text-red-500 font-medium">
-                    {coin.quote.USD.percent_change_24h.toFixed(2)}%
+                    {coin.quote.USD[`percent_change_${timeWindow}`].toFixed(2)}%
                   </div>
                   <div className="text-sm text-muted-foreground">
                     ${formatNumber(coin.quote.USD.price)}
