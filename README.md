@@ -4,7 +4,7 @@ Real-time crypto market analysis and insights platform built with Next.js
 
 ## Overview
 
-Alpaco is a sophisticated cryptocurrency market intelligence platform that provides real-time analysis and insights for crypto traders and investors. The platform combines a modern, responsive interface built with Next.js with a powerful custom reasoning model backend. This proprietary technology processes market data through advanced algorithms to deliver accurate, actionable insights in real-time.
+Alpaco is a sophisticated cryptocurrency market intelligence platform that provides real-time analysis and insights for crypto traders and investors. The platform combines a modern, responsive interface built with Next.js with a powerful custom reasoning m odel backend. This proprietary technology processes market data through advanced algorithms to deliver accurate, actionable insights in real-time.
 
 ### Custom Reasoning Model
 
