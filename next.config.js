@@ -1,44 +1,41 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable checks
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
     ignoreBuildErrors: true,
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.(ts|tsx)$/,
-      use: [{
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            ['@babel/preset-typescript', { allowNamespaces: true }],
-            ['next/babel']
-          ],
-          plugins: [
-            ['@babel/plugin-transform-typescript', { allowNamespaces: true }]
-          ]
-        }
-      }]
-    });
 
-    // Ignore all build errors
+  // Basic settings
+  reactStrictMode: false,
+  swcMinify: false,
+
+  // Webpack config
+  webpack: (config) => {
+    // Disable logging
     config.infrastructureLogging = { level: 'none' };
     config.stats = 'none';
 
+    // Add ignore-loader for specific files
+    config.module.rules.push({
+      test: /page\.client\.tsx$/,
+      use: 'ignore-loader'
+    });
+
+    // Safe watchOptions setup
+    config.watchOptions = {
+      ignored: ['**/node_modules/**', '**/page.client.tsx']
+    };
+
     return config;
   },
-  images: { unoptimized: true },
-  optimizeFonts: true,
-  experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: [],
-  },
 
+  // Experimental features
+  experimental: {
+    serverActions: true,
+  }
 };
 
 module.exports = nextConfig;

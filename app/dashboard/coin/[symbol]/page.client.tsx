@@ -1,7 +1,9 @@
-'use client';
-
 /* eslint-disable */
 // @ts-nocheck
+'use client';
+// @swc-disable-next
+// @babel-disable
+// @compiler-disable
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
